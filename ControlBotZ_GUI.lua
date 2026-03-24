@@ -14,11 +14,13 @@ local LocalPlayer = Players.LocalPlayer
 local function create(className, properties, children)
     local instance = Instance.new(className)
     for prop, value in pairs(properties) do
-        instance[prop] = value
+        pcall(function() instance[prop] = value end)
     end
-    if children then
+    if children and type(children) == "table" then
         for _, child in ipairs(children) do
-            child.Parent = instance
+            if child and typeof(child) == "Instance" then
+                child.Parent = instance
+            end
         end
     end
     return instance
@@ -110,9 +112,13 @@ local cmd_data = {
 function ControlBotZ_GUI.Load(prefix)
     prefix = prefix or "."
     
+    local CoreGui = game:GetService("CoreGui")
+    local success, _ = pcall(function() local x = CoreGui.Name end)
+    local Parent = success and CoreGui or game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+    
     local ScreenGui = create("ScreenGui", {
         Name = "ControlBotZ_GUI",
-        Parent = game:GetService("CoreGui"),
+        Parent = Parent,
         ResetOnSpawn = false
     })
 
