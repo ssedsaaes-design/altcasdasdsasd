@@ -1,21 +1,21 @@
---[[
-██████╗ ██╗ ██╗ ███████╗██╗██╗ ██╗██████╗ ███████╗███╗ ██╗███╗ ██╗██╗ ██╗ ███████╗ ██████╗ ██╗ ██╗██╗ ██╗
-██╔══██╗╚██╗ ██╔╝ ██╔════╝██║╚██╗██╔╝██╔══██╗██╔════╝████╗ ██║████╗ ██║╚██╗ ██╔╝ ██╔════╝██╔═══██╗╚██╗██╔╝██║ ██║
-██████╔╝ ╚████╔╝ ███████╗██║ ╚███╔╝ ██████╔╝█████╗ ██╔██╗ ██║██╔██╗ ██║ ╚████╔╝ █████╗ ██║ ██║ ╚███╔╝ ███████║
-██╔══██╗ ╚██╔╝ ╚════██║██║ ██╔██╗ ██╔═══╝ ██╔══╝ ██║╚██╗██║██║╚██╗██║ ╚██╔╝ ██╔══╝ ██║ ██║ ██╔██╗ ╚════██║
-██████╔╝ ██║ ███████║██║██╔╝ ██╗██║ ███████╗██║ ╚████║██║ ╚████║ ██║███████╗██║ ╚██████╔╝██╔╝ ██╗ ██║
-╚═════╝ ╚═╝ ╚══════╝╚═╝╚═╝ ╚═╝╚═╝ ╚══════╝╚═╝ ╚═══╝╚═╝ ╚═══╝ ╚═╝╚══════╝╚═╝ ╚═════╝ ╚═╝ ╚═╝ ╚═╝
-]]
-
+print("CBZ DBG 1")
 local TextChatService = game:GetService("TextChatService")
+print("CBZ DBG 2")
 local HttpService = game:GetService("HttpService")
+print("CBZ DBG 3")
 local RunService = game:GetService("RunService")
+print("CBZ DBG 4")
 local VU = game:GetService("VirtualUser")
+print("CBZ DBG 5")
 local Players = game:GetService("Players")
+print("CBZ DBG 6")
 
 local genv = (getgenv and getgenv()) or _G
+print("CBZ DBG 7")
 local LocalPLR = Players.LocalPlayer
+print("CBZ DBG 8")
 Username = genv.Username or LocalPLR.Name
+print("CBZ DBG 9")
 
 local runScript = true
 local copychat = false
