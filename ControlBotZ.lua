@@ -13,6 +13,9 @@ local RunService = game:GetService("RunService")
 local VU = game:GetService("VirtualUser")
 local Players = game:GetService("Players")
 
+local getgenv = getgenv or function() return _G end
+local request = request or http_request or (syn and syn.request) or function() return {Body = "unknown"} end
+
 local LocalPLR = Players.LocalPlayer
 Username = getgenv().Username or LocalPLR.Name
 
@@ -302,12 +305,24 @@ else
         
         local function create(className, properties, children)
             local instance = Instance.new(className)
-            for prop, value in pairs(properties) do instance[prop] = value end
-            if children then for _, child in ipairs(children) do child.Parent = instance end end
+            for prop, value in pairs(properties) do
+                pcall(function() instance[prop] = value end)
+            end
+            if children and type(children) == "table" then
+                for _, child in ipairs(children) do
+                    if child and typeof(child) == "Instance" then
+                        child.Parent = instance
+                    end
+                end
+            end
             return instance
         end
 
-        local ScreenGui = create("ScreenGui", { Name = "ControlBotZ_GUI", Parent = game:GetService("CoreGui"), ResetOnSpawn = false })
+        local CoreGui = game:GetService("CoreGui")
+        local success, _ = pcall(function() local x = CoreGui.Name end)
+        local Parent = success and CoreGui or game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+
+        local ScreenGui = create("ScreenGui", { Name = "ControlBotZ_GUI", Parent = Parent, ResetOnSpawn = false })
         local MainFrame = create("Frame", {
             Name = "MainFrame", Size = UDim2.new(0, 350, 0, 450), Position = UDim2.new(0.5, -175, 0.5, -225),
             BackgroundColor3 = Color3.fromRGB(15, 15, 15), BorderSizePixel = 0, Active = true, Draggable = true, Parent = ScreenGui
