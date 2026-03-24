@@ -13,25 +13,25 @@ local RunService = game:GetService("RunService")
 local VU = game:GetService("VirtualUser")
 local Players = game:GetService("Players")
 
-local getgenv = getgenv or function() return _G end
-local request = request or http_request or (syn and syn.request) or function() return {Body = "unknown"} end
-
+local genv = (getgenv and getgenv()) or _G
 local LocalPLR = Players.LocalPlayer
-Username = getgenv().Username or LocalPLR.Name
+Username = genv.Username or LocalPLR.Name
 
 local runScript = true
 local copychat = false
 local copychatUsername = ""
 
-if getgenv().cbzloaded == true then
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Already Running",
-        Text = "ControlBotZ is already running!",
-        Time = 6
-    })
+if genv.cbzloaded then
+    pcall(function()
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Already Running",
+            Text = "ControlBotZ is already running!",
+            Time = 6
+        })
+    end)
     return
 end
-getgenv().cbzloaded = true
+genv.cbzloaded = true
 
 -- ──────────────────────────────────────────────────────────────
 --  Safe character access – prevents most nil index errors
@@ -88,11 +88,13 @@ if LocalPLR.Name ~= Username then
     end
 
     chat("ControlBotZ Running!")
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Thank You",
-        Text = "thank you for using ControlBotZ!",
-        Time = 6
-    })
+    pcall(function()
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "Thank You",
+            Text = "thank you for using ControlBotZ!",
+            Time = 6
+        })
+    end)
 
     local latestVersion = request({
         Url = "https://raw.githubusercontent.com/ssedsaaes-design/ControlBot/refs/heads/main/ControlBotZ%20Version",
@@ -100,11 +102,13 @@ if LocalPLR.Name ~= Username then
     }).Body:match("^%s*(.-)%s*$") or "unknown"
 
     if latestVersion ~= "1.1.4" then
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Old Version!",
-            Text = "Get the newest version from discord!",
-            Time = 8
-        })
+        pcall(function()
+            game:GetService("StarterGui"):SetCore("SendNotification", {
+                Title = "Old Version!",
+                Text = "Get the newest version from discord!",
+                Time = 8
+            })
+        end)
     end
 
     -- (keep showDefaultGui, sendToWebhook, specifyBots, specifyBots2, getArgs, isR15, isWhitelisted, isAdmin as before)
@@ -442,7 +446,9 @@ else
             end
         end)
 
-        game:GetService("StarterGui"):SetCore("SendNotification", { Title = "ControlBotZ GUI", Text = "Controller Loaded. Press RightControl to toggle.", Time = 5 })
+        pcall(function()
+            game:GetService("StarterGui"):SetCore("SendNotification", { Title = "ControlBotZ GUI", Text = "Controller Loaded. Press RightControl to toggle.", Time = 5 })
+        end)
     end
 
     coroutine.wrap(loadGUI)()
