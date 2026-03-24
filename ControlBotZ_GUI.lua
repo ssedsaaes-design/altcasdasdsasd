@@ -369,11 +369,13 @@ function ControlBotZ_GUI.Load(prefix)
     -- Mobile support: button to open?
     -- For now keep it simple for windows user.
     
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "ControlBotZ GUI",
-        Text = "Loaded successfully. Press RightControl to toggle.",
-        Time = 5
-    })
+    pcall(function()
+        game:GetService("StarterGui"):SetCore("SendNotification", {
+            Title = "ControlBotZ GUI",
+            Text = "Loaded successfully. Press RightControl to toggle.",
+            Time = 5
+        })
+    end)
 end
 
 return ControlBotZ_GUI
