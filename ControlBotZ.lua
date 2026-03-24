@@ -1,33 +1,32 @@
-print("CBZ DBG 1")
-local TextChatService = game:GetService("TextChatService")
-print("CBZ DBG 2")
-local HttpService = game:GetService("HttpService")
-print("CBZ DBG 3")
-local RunService = game:GetService("RunService")
-print("CBZ DBG 4")
-local VU = game:GetService("VirtualUser")
-print("CBZ DBG 5")
-local Players = game:GetService("Players")
-print("CBZ DBG 6")
+local function getService(name)
+    local success, service = pcall(function() return game:GetService(name) end)
+    return success and service or nil
+end
 
-local genv = (getgenv and getgenv()) or _G
-print("CBZ DBG 7")
+local TextChatService = getService("TextChatService")
+local HttpService = getService("HttpService")
+local Players = getService("Players")
+local Workspace = getService("Workspace")
+local RunService = getService("RunService")
+local StarterGui = getService("StarterGui")
+local VU = getService("VirtualUser") -- Keep if used later
+
+local genv = (type(getgenv) == "function" and getgenv()) or (type(getgenv) == "table" and getgenv) or _G
 local LocalPLR = Players.LocalPlayer
-print("CBZ DBG 8")
-Username = genv.Username or LocalPLR.Name
-print("CBZ DBG 9")
+while not LocalPLR do task.wait() LocalPLR = Players.LocalPlayer end
 
-local runScript = true
-local copychat = false
-local copychatUsername = ""
+Username = genv.Username or LocalPLR.Name
+Prefix = genv.Prefix or "."
+
+-- Command Sync Value (Bypasses chat restrictions)
+local CommandValueName = "ControlZ_CmdSync"
+local SyncValue = Workspace:FindFirstChild(CommandValueName) or Instance.new("StringValue")
+SyncValue.Name = CommandValueName
+SyncValue.Parent = Workspace
 
 if genv.cbzloaded then
     pcall(function()
-        game:GetService("StarterGui"):SetCore("SendNotification", {
-            Title = "Already Running",
-            Text = "ControlBotZ is already running!",
-            Time = 6
-        })
+        StarterGui:SetCore("SendNotification", { Title = "Already Running", Text = "ControlZ is already active.", Time = 5 })
     end)
     return
 end
@@ -234,7 +233,15 @@ if LocalPLR.Name ~= Username then
         -- ... add the rest of your commands with safeGetCharacter() checks
     end
 
-    -- Chat listeners (unchanged)
+    -- Command Listener (SyncValue)
+    SyncValue.Changed:Connect(function(val)
+        if not runScript then return end
+        if val == "" then return end
+        local p = Players:FindFirstChild(Username)
+        if p then commands(p, val) end
+    end)
+
+    -- Chat listeners (Keeping as backup)
     for _, plr in ipairs(Players:GetPlayers()) do
         plr.Chatted:Connect(function(msg)
             if not runScript then return end
@@ -357,13 +364,12 @@ else
             BackgroundTransparency = 1, BorderSizePixel = 0, ScrollBarThickness = 2, Parent = MainFrame
         }, { create("UIListLayout", { Padding = UDim.new(0, 4) }) })
 
-        local function chat(msg)
-            if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-                local channel = TextChatService.TextChannels:FindFirstChild("RBXGeneral")
-                if channel then channel:SendAsync(msg) end
-            else
-                pcall(function() game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All") end)
-            end
+        local function send(msg)
+            -- SyncValue Command (Bypasses Chat)
+            SyncValue.Value = msg
+            
+            -- Small delay and clear to allow repeated commands
+            task.delay(0.1, function() if SyncValue.Value == msg then SyncValue.Value = "" end end)
         end
 
         local activeItem = nil
@@ -412,7 +418,7 @@ else
 
             Btn.MouseButton1Click:Connect(function()
                 if #data.args == 0 then
-                    chat(prefix .. data.name)
+                    send(Prefix .. data.name)
                     Label.TextColor3 = Color3.fromRGB(255, 255, 255)
                     wait(0.1)
                     Label.TextColor3 = Color3.fromRGB(200, 200, 200)
@@ -426,7 +432,7 @@ else
             Exec.MouseButton1Click:Connect(function()
                 local vals = {}
                 for _, i in ipairs(inputs) do table.insert(vals, i.Text) end
-                chat(prefix .. data.name .. " " .. table.concat(vals, " "))
+                send(Prefix .. data.name .. " " .. table.concat(vals, " "))
                 if activeItem == toggle then activeItem(false) activeItem = nil end
             end)
 
